@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Invitación Especial</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="particle-bg"></div>
+    <div class="container fade-in" id="introContainer">
+        <h1 class="display-4 text-center mb-4">Buenos dias Vale ¿Quieres descubrir un algo pequeño pero especial?</h1>
+        <div class="icon mb-4">🔒</div>
+        <div class="message-container p-4 rounded-3">
+            <div class="message-content" id="introContent">
+                <div class="message-line" id="introLine1"></div>
+                <div class="message-line" id="introLine2"></div>
+                <div class="message-line" id="introLine3"></div>
+            </div>
+        </div>
+        <div class="buttons-container mt-4">
+            <button class="btn btn-accept w-100 w-md-50" id="introAcceptBtn">¡Sí, quiero saber!</button>
+        </div>
+    </div>
+
+    <div class="container d-none" id="mainContainer">
+        <h1 class="display-4 text-center mb-4">Una Invitación Exclusiva</h1>
+        <div class="icon mb-4">☕</div>
+        <div class="message-container p-4 rounded-3">
+            <div class="message-content" id="messageContent">
+                <div class="message-line" id="line1"></div>
+                <div class="message-line" id="line2"></div>
+                <div class="message-line" id="line3"></div>
+                <div class="message-line" id="line4"></div>
+                <div class="message-line" id="line5"></div>
+                <div class="message-line" id="line6"></div>
+                <div class="message-line" id="line7"></div>
+                <div class="message-line" id="line8"></div>
+                <div class="message-line" id="line9"></div>
+                <div class="message-line" id="line10"></div>
+            </div>
+        </div>
+        <div class="buttons-container mt-4">
+            <button class="btn btn-accept w-100 w-md-50" id="acceptBtn">¡Si, acepto !</button>
+        </div>
+    </div>
+
+    <div class="container d-none" id="codeContainer">
+        <h1 class="display-4 text-center mb-4">Escribe solo tu mes de nacimiento</h1>
+        <div class="icon mb-4">🔑</div>
+        <div class="message-container p-4 rounded-3">
+            <div class="message-content" id="codeContent">
+                <div class="message-line" id="codeLine1"></div>
+                <div class="message-line" id="codeLine2"></div>
+                <div class="message-line" id="codeLine3"></div>
+                <input type="text" class="code-input form-control mt-3" id="codeInput" placeholder="Escribe el código aquí" aria-label="Código de acceso">
+                <div class="error-message text-danger mt-2" id="errorMessage">Código incorrecto. Intenta de nuevo.</div>
+            </div>
+        </div>
+        <div class="buttons-container mt-4">
+            <button class="btn btn-accept w-100 w-md-50" id="verifyCodeBtn">Verificar código</button>
+        </div>
+    </div>
+
+    <div class="container d-none" id="songContainer">
+        <h1 class="display-4 text-center mb-4">Un Regalo Especial</h1>
+        <div class="icon mb-4">🎶</div>
+        <div class="message-container p-4 rounded-3">
+            <div class="message-content" id="songContent">
+                <div class="message-line" id="songLine1"></div>
+                <video class="song-video mt-3" controls aria-label="Reproducir la canción">
+                    <source src="./video.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento de video.
+                </video>
+            </div>
+        </div>
+        <div class="buttons-container mt-4">
+            <button class="btn btn-accept w-100 w-md-50" id="backBtn">Volver</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const introContainer = document.getElementById('introContainer');
+            const mainContainer = document.getElementById('mainContainer');
+            const codeContainer = document.getElementById('codeContainer');
+            const songContainer = document.getElementById('songContainer');
+            const introAcceptBtn = document.getElementById('introAcceptBtn');
+            const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+            const acceptBtn = document.getElementById('acceptBtn');
+            const backBtn = document.getElementById('backBtn');
+            const codeInput = document.getElementById('codeInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const CORRECT_CODE = "julio";
+            const RELEASE_DATE = new Date('2025-07-25T07:00:00');
+
+            createParticles();
+            showIntro();
+
+            introAcceptBtn.addEventListener('click', () => {
+                introAcceptBtn.classList.add('bounce');
+                setTimeout(() => {
+                    introAcceptBtn.classList.remove('bounce');
+                    transitionContainers(introContainer, checkReleaseDate);
+                }, 300);
+            });
+
+            verifyCodeBtn.addEventListener('click', verifyCode);
+            codeInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') verifyCode();
+            });
+
+            acceptBtn.addEventListener('click', () => {
+                acceptBtn.classList.add('bounce');
+                setTimeout(() => {
+                    acceptBtn.classList.remove('bounce');
+                    showResponse();
+                }, 300);
+            });
+
+            backBtn.addEventListener('click', () => {
+                backBtn.classList.add('bounce');
+                setTimeout(() => {
+                    backBtn.classList.remove('bounce');
+                    transitionContainers(songContainer, () => {
+                        songContainer.classList.add('d-none');
+                        mainContainer.classList.remove('d-none');
+                        animateContainer(mainContainer);
+                    });
+                }, 300);
+            });
+
+            function verifyCode() {
+                const enteredCode = codeInput.value.trim().toLowerCase();
+                if (enteredCode === CORRECT_CODE) {
+                    transitionContainers(codeContainer, () => {
+                        codeContainer.classList.add('d-none');
+                        mainContainer.classList.remove('d-none');
+                        animateContainer(mainContainer);
+                        showInvitation();
+                    });
+                } else {
+                    showError();
+                }
+            }
+
+            function showError() {
+                errorMessage.classList.add('show-error');
+                codeInput.classList.add('border-danger', 'shake');
+                setTimeout(() => {
+                    errorMessage.classList.remove('show-error');
+                    codeInput.classList.remove('border-danger', 'shake');
+                }, 3000);
+            }
+
+            function showIntro() {
+                const introLines = [
+                    "Esta pequeña 'encuesta'",
+                    "No te tomará más de dos minutos",
+                    "¿Estás lista?"
+                ];
+                let delay = 500;
+                introLines.forEach((line, index) => {
+                    const lineElement = document.getElementById(`introLine${index + 1}`);
+                    setTimeout(() => {
+                        lineElement.classList.add('fade-slide');
+                        lineElement.textContent = line;
+                    }, delay);
+                    delay += 1000;
+                });
+            }
+
+            function showCodeInput() {
+                const codeLines = [
+                    "¿Sabías que cuando las cosas son intrigantes se vuelven más atractivas en cierto modo?",
+                    "Adelante escribe lo solicitado",
+                    
+                ];
+                let delay = 500;
+                codeLines.forEach((line, index) => {
+                    const lineElement = document.getElementById(`codeLine${index + 1}`);
+                    setTimeout(() => {
+                        lineElement.classList.add('fade-slide');
+                        lineElement.textContent = line;
+                    }, delay);
+                    delay += 1000;
+                });
+            }
+
+            function checkReleaseDate() {
+                if (new Date() >= RELEASE_DATE) {
+                    transitionContainers(introContainer, () => {
+                        introContainer.classList.add('d-none');
+                        mainContainer.classList.remove('d-none');
+                        animateContainer(mainContainer);
+                        showInvitation();
+                    });
+                } else {
+                    transitionContainers(introContainer, () => {
+                        introContainer.classList.add('d-none');
+                        codeContainer.classList.remove('d-none');
+                        animateContainer(codeContainer);
+                        showCodeInput();
+                    });
+                }
+            }
+
+            function showInvitation() {
+                const messageLines = [
+                    "Hola Valeria... ¿Te he sacado ya alguna sonrisa?",
+                    "Si es asi me alegro y si no me esforzare más",
+                    "Hoy tenemos un plan especial pero no sería lo mismo sin ti.",
+                    "¿Estás lista para compartir ese café?",
+                    "Sé que estás nerviosa, pero yo también",
+                    "y ¿Sabes qué?",
+                    "Eso lo hace aún más interesante",
+                    "No prometo ser el mejor conversador,",
+                    "pero sí alguien que quiere escucharte, verte sonreír…",
+                    "y conocerte un poco más ☺️",
+                    "¿Te animas a hacer este momento inolvidable?"
+                ];
+                createFloatingElements();
+                let delay = 500;
+                messageLines.forEach((line, index) => {
+                    const lineElement = document.getElementById(`line${index + 1}`);
+                    setTimeout(() => {
+                        lineElement.classList.add('fade-slide');
+                        lineElement.textContent = line;
+                    }, delay);
+                    delay += 1000;
+                });
+            }
+
+            function showSongMessage() {
+                const songLine = document.getElementById('songLine1');
+                const songText = "La canción prometida para que te saque una sonrisa y no sientas estrés. Espero te dé un pequeño relax";
+                setTimeout(() => {
+                    songLine.classList.add('fade-slide');
+                    songLine.textContent = songText;
+                }, 500);
+            }
+
+            function transitionContainers(currentContainer, callback) {
+                currentContainer.classList.add('container-exit');
+                setTimeout(() => {
+                    currentContainer.classList.add('d-none');
+                    currentContainer.classList.remove('container-exit');
+                    callback();
+                }, 400);
+            }
+
+            function animateContainer(container) {
+                container.style.opacity = '0';
+                container.style.transform = 'translateY(20px) scale(0.95)';
+                container.classList.remove('d-none');
+                setTimeout(() => {
+                    container.classList.add('container-enter');
+                    container.style.opacity = '1';
+                    container.style.transform = 'translateY(0) scale(1)';
+                    if (container.id === 'songContainer') {
+                        showSongMessage();
+                    }
+                }, 10);
+            }
+
+            function createFloatingElements(count = 25) {
+                const elements = ['❤️', '✨', '🌟', '☕', '🌙', '🫧', '🌸', '💫', '💖', '☀️', '🌷', '💕', '🦋', '🌹', '✳️'];
+                for (let i = 0; i < count; i++) {
+                    const element = document.createElement('div');
+                    element.className = 'floating-element';
+                    element.innerHTML = elements[Math.floor(Math.random() * elements.length)];
+                    element.style.left = Math.random() * 100 + 'vw';
+                    element.style.top = Math.random() * 100 + 'vh';
+                    element.style.fontSize = (Math.random() * 1.2 + 1.3) + 'rem';
+                    element.style.animationDuration = (Math.random() * 3 + 2.5) + 's';
+                    element.style.animationDelay = Math.random() * 0.8 + 's';
+                    element.style.animationName = Math.random() > 0.6 ? 'float' : Math.random() > 0.3 ? 'floatAlternate' : 'floatCircular';
+                    document.body.appendChild(element);
+                    setTimeout(() => element.style.opacity = '0.85', i * 80);
+                }
+            }
+
+            function createParticles() {
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + 'vw';
+                    particle.style.top = Math.random() * 100 + 'vh';
+                    particle.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                    particle.style.animationDelay = Math.random() * 2 + 's';
+                    document.querySelector('.particle-bg').appendChild(particle);
+                }
+            }
+
+            function showResponse() {
+                acceptBtn.classList.add('d-none');
+                const messageContent = document.getElementById('messageContent');
+                messageContent.innerHTML = `
+                    <div class="message-line display-6 fade-slide">
+                        ¡Perfecto! Estare por ti en el lugar indicado para ir un momento único ☺
+                    </div>
+                `;
+                const buttonsContainer = document.querySelector('#mainContainer .buttons-container');
+                buttonsContainer.innerHTML += `
+                    <button class="btn btn-accept w-100 w-md-50" id="songBtn">Ahora presiona aquí</button>
+                `;
+                const messageContainer = document.querySelector('#mainContainer .buttons-container');
+                messageContainer.style.background = 'rgba(255, 107, 158, 0.3)';
+                messageContainer.style.borderColor = 'rgba(255, 107, 158, 0.6)';
+                createConfetti();
+
+                const songBtn = document.getElementById('songBtn');
+                songBtn.addEventListener('click', () => {
+                    songBtn.classList.add('bounce');
+                    setTimeout(() => {
+                        songBtn.classList.remove('bounce');
+                        transitionContainers(mainContainer, () => {
+                            mainContainer.classList.add('d-none');
+                            songContainer.classList.remove('d-none');
+                            animateContainer(songContainer);
+                        });
+                    }, 300);
+                });
+            }
+
+            function createConfetti() {
+                const colors = ['#ff6b9d', '#ff8fab', '#ffb3c6', '#ffd6e0', '#ff4d6d', '#ff9eb7', '#ff6b6b', '#ffe4e1'];
+                const shapes = ['circle', 'star', 'heart'];
+                for (let i = 0; i < 250; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = `confetti ${shapes[Math.floor(Math.random() * shapes.length)]}`;
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 12 + 6 + 'px';
+                    confetti.style.height = Math.random() * 12 + 6 + 'px';
+                    confetti.style.animation = `confettiFall ${Math.random() * 1.5 + 1}s ease-in-out forwards`;
+                    confetti.style.animationDelay = Math.random() * 0.8 + 's';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.style.opacity = '1', 10);
+                    setTimeout(() => confetti.remove(), 2000);
+                }
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
