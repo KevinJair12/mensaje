@@ -94,7 +94,6 @@
             const codeInput = document.getElementById('codeInput');
             const errorMessage = document.getElementById('errorMessage');
             const CORRECT_CODE = "julio";
-            const RELEASE_DATE = new Date('2025-07-25T07:00:00');
 
             createParticles();
             showIntro();
@@ -103,7 +102,12 @@
                 introAcceptBtn.classList.add('bounce');
                 setTimeout(() => {
                     introAcceptBtn.classList.remove('bounce');
-                    transitionContainers(introContainer, checkReleaseDate);
+                    transitionContainers(introContainer, () => {
+                        introContainer.classList.add('d-none');
+                        codeContainer.classList.remove('d-none');
+                        animateContainer(codeContainer);
+                        showCodeInput();
+                    });
                 }, 300);
             });
 
@@ -176,7 +180,6 @@
                 const codeLines = [
                     "¿Sabías que cuando las cosas son intrigantes pueden resultar más atractivas en cierto modo?",
                     "Es lo que sucede contigo",
-                    
                 ];
                 let delay = 500;
                 codeLines.forEach((line, index) => {
@@ -187,24 +190,6 @@
                     }, delay);
                     delay += 1000;
                 });
-            }
-
-            function checkReleaseDate() {
-                if (new Date() >= RELEASE_DATE) {
-                    transitionContainers(introContainer, () => {
-                        introContainer.classList.add('d-none');
-                        mainContainer.classList.remove('d-none');
-                        animateContainer(mainContainer);
-                        showInvitation();
-                    });
-                } else {
-                    transitionContainers(introContainer, () => {
-                        introContainer.classList.add('d-none');
-                        codeContainer.classList.remove('d-none');
-                        animateContainer(codeContainer);
-                        showCodeInput();
-                    });
-                }
             }
 
             function showInvitation() {
@@ -348,3 +333,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
+                                
